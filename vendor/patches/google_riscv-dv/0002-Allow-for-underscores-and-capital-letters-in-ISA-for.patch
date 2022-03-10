@@ -1,0 +1,36 @@
+From e6d82cc25357ffca660f572c91892fcfb670311e Mon Sep 17 00:00:00 2001
+From: Pirmin Vogel <vogelpi@lowrisc.org>
+Date: Fri, 26 Nov 2021 09:49:17 +0100
+Subject: [PATCH] Allow for underscores and capital letters in ISA for ISS
+
+Newer versions of Spike need the required bitmanip sub-extensions to be
+specified separately in the ISA string as _Zba_Zbb_Zbc_Zbc_Xbitmanip
+(where Xbitmanip comprises all sub-extensions not part of v.1.0.0 but
+remaining in draft v.0.9.4) instead of just b. Previously, run.py would
+print an error message when parsing such an ISA string but still call
+Spike with the correct arguments which is confusing.
+
+With this commit, run.py is modified to accept such ISA strings and not
+print the error message.
+
+Signed-off-by: Pirmin Vogel <vogelpi@lowrisc.org>
+---
+ run.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/run.py b/run.py
+index c4765048c2..9748218e7e 100644
+--- a/run.py
++++ b/run.py
+@@ -147,7 +147,7 @@ def parse_iss_yaml(iss, iss_yaml, isa, setting_dir, debug_cmd):
+             cmd = re.sub("\<path_var\>",
+                          get_env_var(entry['path_var'], debug_cmd=debug_cmd),
+                          cmd)
+-            m = re.search(r"rv(?P<xlen>[0-9]+?)(?P<variant>[a-z]+?)$", isa)
++            m = re.search(r"rv(?P<xlen>[0-9]+?)(?P<variant>[a-zA-Z_]+?)$", isa)
+             if m:
+                 cmd = re.sub("\<xlen\>", m.group('xlen'), cmd)
+             else:
+-- 
+2.34.1
+
